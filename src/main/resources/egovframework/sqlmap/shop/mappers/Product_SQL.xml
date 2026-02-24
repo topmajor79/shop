@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.shop.service.impl.ProductMapper">
+
+	<resultMap id="Product" type="egovframework.shop.service.ProductVO">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="description" column="description"/>
+		<result property="useYn" column="use_yn"/>
+		<result property="regUser" column="reg_user"/>
+	</resultMap>
+
+	<insert id="insertProduct" parameterType="ProductVO">
+
+			INSERT INTO product (
+			    product_name,
+			    brand,
+			    product_code,
+			    category,
+			    price,
+			    description,
+			    shipping_type,
+			    shipping_cost,
+			    free_limit,
+			    shipping_info,
+			    receive_method,
+			    purchase_limit,
+			    image
+			) VALUES (
+			    #{productName},
+			    #{brand},
+			    #{productCode},
+			    #{category},
+			    #{price},
+			    #{description},
+			    #{shippingType},
+			    #{shippingCost},
+			    #{freeLimit},
+			    #{shippingInfo},
+			    #{receiveMethod},
+			    #{purchaseLimit},
+			    #{image}
+			)
+
+
+	</insert>
+
+	<select id="selectProduct" resultMap="Product">
+
+	  SELECT 
+			product_code productCode,
+			product_name productName,
+			brand,
+			category,
+			price,
+			description,
+			shipping_type shippingType,
+			shipping_cost shippingCost,
+			purchase_limit purchaseLimit,
+			shipping_info shippingInfo,
+			receive_method receiveMethod,
+			free_limit freeLimit,
+			image
+		FROM product
+		WHERE  product_code=#{productCode}
+
+	</select>
+
+	<select id="selectProductList" parameterType="searchVO" resultType="productVO">
+
+		SELECT 
+			product_code productCode,
+			product_name productName,
+			brand,
+			category,
+			price,
+			description,
+			shipping_type shippingType,
+			shipping_cost shippingCost,
+			purchase_limit purchaseLimit,
+			shipping_info shippingInfo,
+			receive_method receiveMethod,
+			image
+		FROM product
+			WHERE 1=1
+			<!-- <if test="searchKeyword != null and searchKeyword != ''">
+		        <choose>
+		            <when test="searchCondition == 0">
+						AND	ID LIKE '%' || #{searchKeyword} || '%'
+					</when>
+		            <when test="searchCondition == 1">
+						AND	NAME LIKE '%' || #{searchKeyword} || '%'
+					</when>
+				</choose>
+			</if> -->
+			ORDER BY productCode 
+			<!-- LIMIT #{recordCountPerPage} OFFSET #{firstIndex} -->
+	</select>
+
+	<select id="selectProductListTotCnt" parameterType="searchVO" resultType="int">
+
+			SELECT COUNT(*) totcnt
+			FROM Product
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+		        <choose>
+		            <when test="searchCondition == 0">
+						AND ID LIKE '%' || #{searchKeyword} || '%'
+					</when>
+		            <when test="searchCondition == 1">
+						AND	NAME LIKE '%' || #{searchKeyword} || '%'
+					</when>
+				</choose>
+			</if>
+	</select>
+	
+	<update id="updateProduct" parameterType="ProductVO">
+        UPDATE product
+        SET
+            product_name = #{productName},
+            brand = #{brand},
+            product_code = #{productCode},
+            category = #{category},
+            price = #{price},
+            description = #{description},
+            shipping_type = #{shippingType},
+            shipping_cost = #{shippingCost},
+            free_limit = #{freeLimit},
+            shipping_info = #{shippingInfo},
+            receive_method = #{receiveMethod},
+            purchase_limit = #{purchaseLimit},
+            image  = #{image}
+        WHERE product_code = #{productCode}
+    </update>
+    
+    <delete id="deleteProduct">
+
+			DELETE FROM Product
+			WHERE product_code=#{productCode}
+
+	</delete>
+	
+	<select id="selectCategory">
+		SELECT id as categoryId, name as categoryName, '' as isNew
+		FROM category
+		ORDER BY categoryId
+	
+	</select>
+    <update id="updateCategory" parameterType="CategoryVO">
+    	INSERT INTO category(ID, NAME)
+    	VALUES(#{categoryId}, #{categoryName})
+    
+    </update>
+    
+    <select id="selectLogin" parameterType="map"
+        resultType="UserVO">
+		SELECT  user_id AS userId, 
+				user_name AS userName,
+				password,
+				email,
+				hp,
+				address,
+				address2,
+				post_num AS SpostNum,
+				point,
+				role
+		FROM user
+		WHERE user_id =#{id} AND password =#{password}	
+	</select>
+    
+    <select id="selectKakaoLogin" parameterType="map"
+        resultType="UserVO">
+		SELECT  user_id AS userId, 
+				user_name AS userName,
+				password,
+				email,
+				hp,
+				address,
+				address2,
+				post_num AS SpostNum,
+				point,
+				role
+		FROM user
+		WHERE kakao_id =#{kakaoId}	
+	</select>
+    
+    <select id="selectNaverLogin" parameterType="map"
+        resultType="UserVO">
+		SELECT  user_id AS userId, 
+				user_name AS userName,
+				password,
+				email,
+				hp,
+				address,
+				address2,
+				post_num AS SpostNum,
+				point,
+				role
+		FROM user
+		WHERE naver_id =#{naverId}	
+	</select>
+
+</mapper>
